@@ -1,0 +1,7 @@
+discord.py
+python-dotenv
+requests
+pillow
+# Cambiamos a driver de PostgreSQL
+asyncpg
+psycopg2-binary

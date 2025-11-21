@@ -12,19 +12,24 @@ bot = commands.Bot(command_prefix="!", intents=intents, help_command=None)
 
 @bot.event
 async def on_ready():
-    await inicializar_db()
-    print(f'🐢 {bot.user.name} ONLINE - GALAPAGOS RP')
-    # ... resto de tu código on_ready ...
-
-# ... (resto de tus comandos y cogs) ...
-
-# --- AL FINAL DEL ARCHIVO ---
-
-if __name__ == "__main__":
-    keep_alive()  # ✅ NUEVO: Encendemos el servidor web falso
-    # Asegúrate de que TOKEN exista
-    token = os.getenv('DISCORD_TOKEN')
-    if not token:
-        print("Error: No se encontró el token del bot.")
-    else:
-        bot.run(token)
+    print("🐢 ...Intentando iniciar sesión...")
+    try:
+        # Intenta conectar la base de datos
+        await inicializar_db()
+        print("✅ Base de Datos conectada correctamente.")
+        
+        print(f'✅ {bot.user.name} ONLINE - GALAPAGOS RP')
+        await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.playing, name="Galapagos RP 🐢 | !ayuda"))
+        
+        # Cargar extensiones (Cogs)
+        for filename in os.listdir('./cogs'):
+            if filename.endswith('.py'):
+                try:
+                    await bot.load_extension(f'cogs.{filename[:-3]}')
+                    print(f'🔹 Módulo cargado: {filename}')
+                except Exception as e:
+                    print(f'❌ Error cargando {filename}: {e}')
+                    
+    except Exception as error_fatal:
+        # ESTO NOS DIRÁ EL ERROR REAL EN ROJO
+        print(f"🔥 ERROR FATAL EN ON_READY: {error_fatal}")
